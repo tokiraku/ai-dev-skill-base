@@ -421,6 +421,7 @@ Claude Code は `AGENTS.md` を直接読まないため、`CLAUDE.md` で `@AGEN
 ## 次のステップ（推奨）
 
 - `/requirements <機能名>` — 各機能の詳細な要件定義を行う
+- `/create-tasks` — 要件ドキュメントを実装タスクに分解して `tasks/todo.md` に出力する
 - 憲章の「承認者」欄を埋め、ステークホルダーのレビューを受ける
 - 技術スタックが確定したら `docs/requirements/` 配下のアーキテクチャ図を更新する
 ```
