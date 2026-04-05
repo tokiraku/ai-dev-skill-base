@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+#
+# pre-commit hook: .agents/ → .claude/ の自動同期 + copilot-instructions.md の生成
+#
+# Single Source of Truth:
+#   .agents/rules/  ... ルール定義（ここだけ編集する）
+#   .agents/skills/ ... スキル定義（ここだけ編集する）
+#
+# 自動生成（直接編集しない）:
+#   .claude/rules/                  ... Claude Code が自動読み込み
+#   .claude/skills/                 ... Claude Code 用スキル
+#   .github/copilot-instructions.md ... GitHub Copilot が自動読み込み
+
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+# ----------------------------------------
+# 1. .agents/ → .claude/ の同期
+# ----------------------------------------
+echo "[pre-commit] .agents/ → .claude/ を同期中..."
+
+# .claude/ を一旦削除して .agents/ からコピー
+rm -rf "$REPO_ROOT/.claude/"
+cp -r "$REPO_ROOT/.agents/." "$REPO_ROOT/.claude/"
+
+# ----------------------------------------
+# 2. .github/copilot-instructions.md の生成
+#    .agents/rules/*.md を結合して生成する
+# ----------------------------------------
+echo "[pre-commit] .github/copilot-instructions.md を生成中..."
+
+COPILOT_INSTRUCTIONS="$REPO_ROOT/.github/copilot-instructions.md"
+RULES_DIR="$REPO_ROOT/.agents/rules"
+
+mkdir -p "$REPO_ROOT/.github"
+
+# ヘッダーを書き込む
+cat > "$COPILOT_INSTRUCTIONS" << 'HEADER'
+<!-- このファイルは自動生成されます。直接編集しないでください。 -->
+<!-- 編集は .agents/rules/*.md で行ってください。 -->
+
+HEADER
+
+# rules/*.md を名前順に結合
+if compgen -G "$RULES_DIR/*.md" > /dev/null 2>&1; then
+  for rule_file in $(ls "$RULES_DIR"/*.md | sort); do
+    # フロントマター（--- で囲まれた部分）を除いて追記
+    awk '
+      BEGIN { in_front=0; done_front=0 }
+      /^---$/ && !done_front { in_front=!in_front; if (!in_front) done_front=1; next }
+      in_front { next }
+      { print }
+    ' "$rule_file" >> "$COPILOT_INSTRUCTIONS"
+    echo "" >> "$COPILOT_INSTRUCTIONS"
+  done
+else
+  echo "<!-- ルールファイルがありません -->" >> "$COPILOT_INSTRUCTIONS"
+fi
+
+# ----------------------------------------
+# 3. 生成ファイルをステージングに追加
+# ----------------------------------------
+git add "$REPO_ROOT/.claude/"
+git add "$COPILOT_INSTRUCTIONS"
+
+echo "[pre-commit] 完了"

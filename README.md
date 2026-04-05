@@ -10,8 +10,10 @@ Claude 系の設定や運用知見も含めつつ、特定ツールに閉じな�
 
 ```
 ai-dev-skill-base/
-├── .agents/
-│   └── skills/               # Claude Code 用カスタムスキル
+├── .agents/                  # Single Source — ここを編集する
+│   ├── rules/                # ルール定義
+│   │   └── code-style.md
+│   └── skills/               # カスタムスキル
 │       ├── code-review/
 │       ├── github-commit-push/
 │       ├── github-create-pr/
@@ -19,6 +21,15 @@ ai-dev-skill-base/
 │       ├── github-pr-review-response/
 │       ├── requirements/
 │       └── tech-requirements/
+├── .claude/                  # 自動生成 — 直接編集しない（.agents/ から同期）
+│   ├── rules/                # Claude Code が自動読み込み
+│   └── skills/
+├── .github/
+│   └── copilot-instructions.md  # 自動生成 — GitHub Copilot が自動読み込み
+├── .githooks/
+│   └── pre-commit            # 同期・生成スクリプト
+├── scripts/
+│   └── setup.sh              # クローン後の初期セットアップ
 └── personal/
     └── .claude/
         └── CLAUDE.md         # 個人用 Claude 動作指針（テンプレート）
@@ -37,6 +48,41 @@ ai-dev-skill-base/
 | `github-pr-review-response` | PR レビューコメントへの対応判定・実装・コミット・返信までを安全に実行 |
 | `requirements` | 要求・アイデア・課題を分析し、機能要件・非機能要件・受け入れ基準を構造化して出力 |
 | `tech-requirements` | インタラクティブなヒアリングで技術スタック・スコープ・制約を収集し、技術要件ドキュメントを生成 |
+
+---
+
+## セットアップ
+
+クローン後に1回だけ実行してください。
+
+```bash
+bash scripts/setup.sh
+```
+
+これにより `git config core.hooksPath .githooks` が設定され、以降 `git commit` 時に同期・生成が自動実行されます。
+
+---
+
+## ルール（`.agents/rules/`）
+
+コードスタイル等のルール定義。**編集は `.agents/rules/` 配下のファイルのみ行ってください。**
+
+| ファイル | 内容 |
+|---|---|
+| `.agents/rules/code-style.md` | 命名規則・関数設計・コメント・フォーマット等の汎用コードスタイル |
+
+---
+
+## ファイル同期の仕組み
+
+`.agents/` を Single Source of Truth として、各ツール向けに自動生成します。
+
+```
+.agents/rules/*.md  ←── 編集する
+    ↓ git commit 時に自動実行（.githooks/pre-commit）
+    ├── .claude/rules/               Claude Code が自動読み込み
+    └── .github/copilot-instructions.md  GitHub Copilot が自動読み込み
+```
 
 ---
 
