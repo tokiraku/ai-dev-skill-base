@@ -33,7 +33,29 @@
 
 ---
 
-## DDDレイヤー構成
+## フロントエンドのコンポーネント設計（アトミックデザイン）
+
+フロントエンドのUIコンポーネントは**アトミックデザイン**で構成する。
+
+```
+atoms/       ← ボタン・入力欄・ラベルなど最小単位のUI部品
+molecules/   ← atomsを組み合わせた小さなUIグループ（検索フォーム等）
+organisms/   ← moleculesを組み合わせたページの構成要素（ヘッダー・カード等）
+templates/   ← ページのレイアウト骨格（データは持たない）
+pages/       ← templatesにデータを流し込んだ実際のページ
+```
+
+### 各レベルのルール
+
+- **atoms**: 外部依存を持たない。スタイルと最小限のpropsのみ
+- **molecules**: atomsのみに依存する。単一の機能を持つ
+- **organisms**: atoms/moleculesに依存する。ビジネスロジックは持たない
+- **templates**: レイアウトのみを担う。データフェッチ・状態管理を持たない
+- **pages**: データフェッチ・状態管理はここで行い、templatesに渡す
+
+---
+
+## バックエンドのDDDレイヤー構成
 
 バックエンドは以下の4層で構成する。層間の依存は**内側方向のみ**とする。
 
@@ -73,11 +95,15 @@ infrastructure/ ← DB実装・外部API・リポジトリ実装
 
 ```
 src/
-  frontend/           ← フロントエンドアプリ
+  frontend/           ← フロントエンドアプリ（アトミックデザイン）
     components/
-    pages/
+      atoms/          ← 最小単位のUI部品
+      molecules/      ← atomsを組み合わせた小さなUIグループ
+      organisms/      ← ページの構成要素
+      templates/      ← レイアウト骨格
+    pages/            ← データを流し込んだ実際のページ
     services/         ← APIクライアント
-  backend/            ← バックエンドアプリ
+  backend/            ← バックエンドアプリ（DDDレイヤー）
     presentation/
     application/
     domain/
