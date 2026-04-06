@@ -94,7 +94,47 @@ argument-hint: 'タスクID（例: FR-001-01）または "next"（省略時は�
 
 ---
 
-### Step 5: 実装
+### Step 5: ブランチ作成
+
+実装に着手する前に、`develop` ブランチから作業ブランチを作成する。
+
+#### ブランチ名の規則
+
+```
+<type>/<task-id>-<short-description>
+```
+
+- `<type>`: タスクの種別に応じて以下から選ぶ
+  - `feat` — 機能実装（FR-xxx 系タスク）
+  - `fix` — バグ修正
+  - `chore` — セットアップ・設定・ツール系（SETUP-xxx 系タスク）
+  - `refactor` — リファクタリング
+  - `test` — テストのみ
+- `<task-id>`: タスクID を小文字に変換（例: `fr-001-01`）
+- `<short-description>`: タスク名を短く英語にしたもの（ケバブケース）
+
+例: `feat/fr-001-01-user-entity`
+
+#### 実行手順
+
+1. `develop` ブランチに切り替える
+   ```bash
+   git checkout develop
+   ```
+2. 最新の `develop` を取得する
+   ```bash
+   git pull origin develop
+   ```
+3. 作業ブランチを作成して切り替える
+   ```bash
+   git checkout -b <branch-name>
+   ```
+
+ブランチ作成後、ブランチ名をユーザーに報告してから Step 6 に進む。
+
+---
+
+### Step 6: 実装
 
 承認された計画に従って実装する。
 
@@ -118,7 +158,7 @@ argument-hint: 'タスクID（例: FR-001-01）または "next"（省略時は�
 
 ---
 
-### Step 6: セルフレビュー
+### Step 7: セルフレビュー
 
 実装完了後、以下の観点でセルフチェックを行う。
 
@@ -135,7 +175,7 @@ argument-hint: 'タスクID（例: FR-001-01）または "next"（省略時は�
 
 ---
 
-### Step 7: tasks/todo.md の進捗更新
+### Step 8: tasks/todo.md の進捗更新
 
 セルフレビューが完了したら `tasks/todo.md` を更新する。
 
@@ -152,7 +192,7 @@ argument-hint: 'タスクID（例: FR-001-01）または "next"（省略時は�
 
 ---
 
-### Step 8: 完了報告
+### Step 9: 完了報告
 
 ```
 ## 実装完了: [タスクID] タスク名
@@ -167,16 +207,21 @@ argument-hint: 'タスクID（例: FR-001-01）または "next"（省略時は�
 - [x] 〇〇が実装されている
 - [x] ユニットテストが全件パス
 
+### 作業ブランチ
+- ブランチ: `<branch-name>`
+
 ### 次のアクション（推奨）
-- 次のタスクに進む: `/implement-task next`
 - コミット・プッシュ: `/github-commit-push`
+- PRを作成する: `/github-create-pr`
 - コードレビュー: `/code-review <実装ファイルパス>`
+- 次のタスクに進む: `/implement-task next`
 ```
 
 ---
 
 ## 注意事項
 
+- **実装は必ず専用の作業ブランチで行う** — `develop` や `main` に直接コミットしない
 - **実装前に必ず計画を提示してユーザーの承認を得る** — 無断で実装を開始しない
 - 要件ドキュメント・アーキテクチャルールが存在する場合は必ず参照してから実装する
 - 完了基準が曖昧なタスクは着手前に AskUserQuestion で確認する
