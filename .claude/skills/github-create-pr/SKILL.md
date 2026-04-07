@@ -157,6 +157,8 @@ git diff <base-branch>..HEAD
 
 #### GitHub MCP が利用可能な場合（優先）
 
+> **MCP 利用判定:** 環境に GitHub MCP が設定されている場合（`mcp_github_*` ツールが利用可能）は MCP を優先する。`mcp_github_*` ツールが見当たらない場合は、Claude Code の MCP 設定（`/mcp` コマンドまたは設定ファイル）で GitHub MCP サーバーを有効化するようユーザーに案内し、有効化を試みてから再確認する。それでも利用不可の場合は `gh` CLI にフォールバックする。
+
 ```
 mcp_github_create_pull_request を使用:
 - owner: <リポジトリオーナー>
@@ -167,8 +169,6 @@ mcp_github_create_pull_request を使用:
 - base: <ベースブランチ>
 - draft: false（ユーザーが draft を希望した場合は true）
 ```
-
-> **MCP 利用判定:** 環境に GitHub MCP が設定されている場合（`mcp_github_*` ツールが利用可能）は MCP を優先する。利用不可の場合は `gh` CLI にフォールバックする。
 
 #### gh CLI を使用する場合（フォールバック）
 

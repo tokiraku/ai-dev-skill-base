@@ -15,6 +15,8 @@ GitHubのPRを対象に、差分・CI結果・レビュー履歴を統合して�
 
 ### Step 1: PRコンテキストの取得（MCP優先）
 
+**まず GitHub MCP サーバーの有効化を試みる。** `mcp_github_*` ツールが見当たらない場合は、Claude Code の MCP 設定（`/mcp` コマンドまたは設定ファイル）で GitHub MCP サーバーが有効になっているか確認し、有効化するようユーザーに案内する。
+
 GitHub MCPが利用可能な場合は、**必ずMCP経由**でPR情報を取得する。
 
 1. `mcp_github_pull_request_read` の `get` でPRメタ情報を取得
