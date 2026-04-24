@@ -15,7 +15,7 @@ GitHub MCPが利用可能な場合はMCP経由の操作を優先する。
 
 ## 実行手順
 
-### Step 1: 変更差分の収集
+### Step 1: 変更差分の収集とシークレットスキャン
 
 以下のコマンドで現在の変更状況を把握する。
 
@@ -27,6 +27,31 @@ git diff --cached --stat
 
 - `git diff HEAD` でコミット対象の全差分を確認する
 - 未ステージのファイルがある場合は、ユーザーに「すべてステージするか、特定ファイルのみか」を確認する
+
+#### シークレットファイルの除外チェック（必須）
+
+変更ファイルに以下のパターンが含まれていないか確認する。含まれていた場合は **即座に中止してユーザーに警告する**。
+
+```bash
+# シークレットファイルのパターンチェック
+git status --short | grep -E '\.env($|\.|local|production|staging)|credentials|secret|private_key|\.pem$|\.p12$|\.pfx$|id_rsa'
+```
+
+**ブロック対象のファイルパターン:**
+- `.env`, `.env.local`, `.env.production`, `.env.staging` など
+- `credentials.json`, `credentials.yml` など
+- `*secret*`, `*private_key*` を含むファイル名
+- `*.pem`, `*.p12`, `*.pfx`, `id_rsa` などの証明書・鍵ファイル
+
+**`.gitignore` の確認:**
+```bash
+# .gitignoreが存在し、.envが除外されているか確認
+cat .gitignore 2>/dev/null | grep -E '\.env|secret|credential' || echo "⚠️ .gitignore に .env 等のシークレット除外設定がない可能性があります"
+```
+
+上記パターンに該当するファイルがステージされている場合は、コミットを中止して以下を案内する：
+1. そのファイルを `git reset HEAD <file>` でステージから除外する
+2. `.gitignore` に追加してトラッキング対象外にする
 
 ### Step 2: コミットメッセージの生成
 
