@@ -31,6 +31,8 @@ argument-hint: '要件ドキュメントのファイルパス or docs/requiremen
 対象ファイルが確定したら全ファイルを Read で読み込む。
 `*-tech-requirements.md` と機能要件 `*-requirements.md` が両方ある場合は両方読み込む。
 
+`/generate-tests` で生成済みのテストファイルがあれば Glob で確認する。存在する場合はStep 3のタスク完了基準に「対応するテストが全件パスすること」を反映する。
+
 ---
 
 ### Step 2: 要件の解析
@@ -177,7 +179,7 @@ argument-hint: '要件ドキュメントのファイルパス or docs/requiremen
 - [ ] [FR-001-01] User エンティティを実装する
   - 優先度: Must Have
   - 関連要件: FR-001
-  - 完了基準: ユニットテストが全件パス
+  - 完了基準: ユニットテストが全件パス（`/generate-tests` 生成済みの場合はそのテストファイルを対象とし、書き換えずに全件パスさせる）
 
 ...
 
